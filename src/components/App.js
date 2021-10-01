@@ -28,7 +28,7 @@ function App() {
   }, [web3, account, blockNumber]);
 
   const handleKeyPress = ({code, target}) => {
-    if (code = 'Enter') {
+    if (code === 'Enter') {
       if (!isNaN(parseInt(target.value))){
         setBlockNumber(target.value);
       } else {
