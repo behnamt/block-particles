@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom";
 import WalletConnect from './WalletConnect';
 import ParticlesPage from '../pages/ParticlesPage';
 import SystemPage from '../pages/SystemPage';
+import PlayerPage from '../pages/PlayerPage';
 
 function App() {
 
@@ -22,6 +23,12 @@ function App() {
             </Route>
             <Route path="/system/:block">
               <SystemPage />
+            </Route>
+            <Route path="/player">
+              <PlayerPage />
+            </Route>
+            <Route path="/player/:block">
+              <PlayerPage />
             </Route>
             <Route path="/">
               <ParticlesPage />
