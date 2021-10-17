@@ -7,15 +7,15 @@ import useExtractPlant from '../hooks/useExtractPlant';
 import BN from 'bn.js';
 
 const WrapperDiv = styled.div`
-    width: 500px;
-    height: 500px;
+    width: ${props => props.canvasSize}px;
+    height: ${props => props.canvasSize}px;
     box-shadow: #525252 6px 6px;
     cursor: pointer;
     background: #969696;
     margin: 0 auto;
 `
 
-const CANVAS_SIZE = 500; // in px
+const CANVAS_SIZE = 700; // in px
 const HASH_SPLITTER = 2;
 
 function SystemPage() {
@@ -118,9 +118,9 @@ function SystemPage() {
   }, [rawPlanets])
 
   return (
-    <WrapperDiv>
+    <WrapperDiv canvasSize={CANVAS_SIZE}>
       {sun.size > 0 && planetsWithMoon.length && (
-        <System sun={sun} planets={planetsWithMoon} />
+        <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
       )}
     </WrapperDiv>
   )

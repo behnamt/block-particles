@@ -1,7 +1,7 @@
 import { ReactP5Wrapper } from 'react-p5-wrapper';
 import PlanetBody from '../p5/PlanetBody';
 
-function System({ sun, planets }) {
+function System({ sun, planets, canvasSize }) {
   const sketh = (p) => {
     let sunPlanet;
 
@@ -13,7 +13,7 @@ function System({ sun, planets }) {
     p.setup = () => {
       drag = p.createVector(0, 0);
 
-      p.createCanvas(500, 500, p.WEBGL);
+      p.createCanvas(canvasSize, canvasSize, p.WEBGL);
 
       sunPlanet = new PlanetBody({ p, drag, radius: sun.size, distance: 0, parent: null, emission: p.color(255), color: p.color(255) });
       planets.forEach(planet => {
@@ -29,7 +29,6 @@ function System({ sun, planets }) {
           color: planet.color
         })
         if (planet.children?.length ){
-          console.log('child', planet.children.length);
           planet.children.forEach(moon=>{
             new PlanetBody({
               p,
