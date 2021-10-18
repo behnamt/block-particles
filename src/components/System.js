@@ -27,7 +27,8 @@ function System({ sun, planets, canvasSize }) {
           parent: sunPlanet,
           emission: null,
           color: planet.color,
-          planet: true
+          planet: true,
+          tailLength: planet.tailLength,
         })
         if (planet.children?.length ){
           planet.children.forEach(moon=>{

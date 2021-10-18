@@ -79,7 +79,7 @@ function SystemPage() {
       }
     });
     moonalizedPlanets.forEach(planet => {
-      if (planet.children?.length) {
+      if (planet?.children?.length) {
         let newPlanetRadius = planet.radius;
         planet.children = planet.children.map(moon => {
           newPlanetRadius += moon.radius * 0.1;

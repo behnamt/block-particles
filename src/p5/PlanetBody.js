@@ -1,5 +1,5 @@
 class PlanetBody {
-  constructor({ p, drag, radius, distance, parent, emission, color, theta = 1, speed = 1, planet = false }) {
+  constructor({ p, drag, radius, distance, parent, emission, color, theta = 1, speed = 1, planet = false, tailLength = 10 }) {
     this.p = p;
     this.drag = drag;
     this.color = p.color(color) ;
@@ -13,7 +13,7 @@ class PlanetBody {
     this.parent = parent;
     this.tail = [];
     this.planet = planet;
-    this.tailLength = 10;
+    this.tailLength = tailLength;
     if (parent) {
       parent.children.push(this);
     }
@@ -32,7 +32,7 @@ class PlanetBody {
     if (this.tail.length > this.tailLength) {
       this.tail.shift();
     }
-    this.tail.push({ angle: this.angle, r: this.radius, color: this.color });
+    this.tail.push({ angle: this.angle });
   }
 
   drawTail = () => {
@@ -40,15 +40,11 @@ class PlanetBody {
       this.p.push();
       this.p.rotate(-this.tail[i].angle);
       this.p.translate(this.distance, 0);
-      this.p.ambientMaterial(this.tail[i].color);
-      this.p.sphere(this.tail[i].r);
-
+      this.p.strokeWeight(1);
+      this.p.stroke(this.color);
+      this.p.line(0, 0, 0, 5);
+      this.p.noFill();
       
-      //calculate the proper numer to reduce radius to 0
-      const radiusReducer = this.tail[i].r / this.tailLength;
-      const alphareducer = this.tail[i].color.alpha / this.tailLength;
-      this.tail[i].r -= radiusReducer;
-      this.tail[i].color.setAlpha(this.tail[i].color.alpha - alphareducer);
       this.p.pop();
     }
   }

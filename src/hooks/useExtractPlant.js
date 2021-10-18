@@ -17,6 +17,7 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
     const distance = normalize(sunSize, CANVAS_SIZE / 2, parseInt(`0x${_distance}`, HEX)) + sunSize;
     const speed = normalize(1, 6, parseInt(`0x${_speed}`, HEX));
     const radius = normalize(5, sunSize - 2, parseInt(`0x${_radius}`, HEX));
+    const tailLength = 90 * (radius / sunSize);
 
     return {
       color: `#${_color1}${_color2}${_color3}`,
@@ -24,6 +25,7 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
       distance,
       speed,
       radius,
+      tailLength
     };
   }
 
