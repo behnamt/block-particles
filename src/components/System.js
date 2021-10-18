@@ -15,7 +15,7 @@ function System({ sun, planets, canvasSize }) {
 
       p.createCanvas(canvasSize, canvasSize, p.WEBGL);
 
-      sunPlanet = new PlanetBody({ p, drag, radius: sun.size, distance: 0, parent: null, emission: p.color(255), color: p.color(255) });
+      sunPlanet = new PlanetBody({ p, drag, radius: sun.size, distance: 0, parent: null, planet: false, emission: p.color(255), color: p.color(255) });
       planets.forEach(planet => {
         const _planetBody = new PlanetBody({
           p,
@@ -26,7 +26,8 @@ function System({ sun, planets, canvasSize }) {
           distance: planet.distance,
           parent: sunPlanet,
           emission: null,
-          color: planet.color
+          color: planet.color,
+          planet: true
         })
         if (planet.children?.length ){
           planet.children.forEach(moon=>{
@@ -39,7 +40,8 @@ function System({ sun, planets, canvasSize }) {
               distance: moon.distance,
               parent: _planetBody,
               emission: null,
-              color: moon.color
+              color: moon.color,
+              planet: false,
             })
           })
         }
