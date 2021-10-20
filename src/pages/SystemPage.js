@@ -20,35 +20,38 @@ const HASH_SPLITTER = 2;
 
 function SystemPage() {
 
-  const { getPlanet, normalize } = useExtractPlant({ CANVAS_SIZE, HASH_SPLITTER })
+  const { getPlanet, getSun, normalize } = useExtractPlant({ CANVAS_SIZE, HASH_SPLITTER })
   let { block } = useParams();
   const { account, library: web3 } = useWeb3React();
   const [blockNumber, setBlockNumber] = useState(block || 'latest');
 
   const [rawPlanets, setRawPlanets] = useState({ zeroPlanets: [], fatPlanets: [] })
   const [planetsWithMoon, setPlanetsWithMoons] = useState([]);
-  const [sun, setSun] = useState({ size: 0, tx: '' });
+  const [sun, setSun] = useState({ size: 0, tx: '', emptyDistance: 0 });
   const [transactions, setTransactions] = useState([]);
 
   const setSunProperties = ({ gasUsed, hash }) => {
     const bnGasUsed = new BN(gasUsed);
     const sunSize = Math.round(Math.log(bnGasUsed.toNumber()));
-    setSun({ size: sunSize, tx: hash });
+    const {emptyDistance} = getSun({ tx: hash, sunSize})
+    setSun({ size: sunSize, tx: hash, emptyDistance });
     return sunSize;
   }
 
-  const getRawPlanets = async ({ transactions, sunSize }) => {
+  const getRawPlanets = async ({ transactions }) => {
     const zeroPlanets = [];
     const fatPlanets = [];
     for await (const tx of transactions) {
       const hashData = await web3.eth.getTransaction(tx);
-      hashData.value === '0' ? zeroPlanets.push(hashData.hash) : fatPlanets.push({ tx: hashData.hash, value: hashData.value });
+      hashData.value === '0' ?
+       zeroPlanets.push(hashData.hash) : 
+       fatPlanets.push({ tx: hashData.hash, value: hashData.value });
     }
-    setRawPlanets({zeroPlanets, fatPlanets: extractDataAndSort(fatPlanets, sunSize) });
+    setRawPlanets({zeroPlanets, fatPlanets: extractDataAndSort(fatPlanets) });
   }
 
-  const extractDataAndSort = (fatPlanets, sunSize) => {
-    return fatPlanets.map((planet) => getPlanet(planet, sunSize)).sort((a, b) => a.distance - b.distance);
+  const extractDataAndSort = (fatPlanets) => {
+    return fatPlanets.map((planet) => getPlanet(planet, sun.size, sun.emptyDistance)).sort((a, b) => a.distance - b.distance);
   }
 
   const moonalize = () => {
@@ -88,7 +91,7 @@ function SystemPage() {
             radius: moon.radius * 0.9,
           }
         })
-        planet.radius = newPlanetRadius;
+        planet.radius = Math.min(newPlanetRadius, sun.size);
       }
     })
     setPlanetsWithMoons(moonalizedPlanets);
@@ -106,8 +109,8 @@ function SystemPage() {
   }, [web3, account, blockNumber]);
 
   useEffect(() => {
-    if (sun && transactions.length){
-      getRawPlanets({transactions, sunSize: sun.size});
+    if (sun?.size && transactions.length){
+      getRawPlanets({transactions});
     }
   }, [sun, transactions])
 
