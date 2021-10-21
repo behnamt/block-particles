@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ReactP5Wrapper } from 'react-p5-wrapper';
 import PlanetBody from '../p5/PlanetBody';
 
