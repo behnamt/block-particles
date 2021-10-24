@@ -1,3 +1,5 @@
+import BN from 'bn.js';
+
 const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
 
   const HEX = 16;
@@ -5,11 +7,14 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
   const re = new RegExp(`.{1,${HASH_SPLITTER}}`, 'g');
   const EMPTY_SPACE = 100;
 
-  const getSun = ({ tx, sunSize }) => {
+  const getSun = ({ tx, gasUsed }) => {
+    const bnGasUsed = new BN(gasUsed);
+    const sunSize = Math.round(Math.log(bnGasUsed.toNumber()));
+
     const noZeroHash = tx.substring(2);
     const [_emptyDistance] = noZeroHash.match(re);
     const emptyDistance = normalize(0, (CANVAS_SIZE / 2) - EMPTY_SPACE, parseInt(`0x${_emptyDistance}`, HEX)) + sunSize;
-    return { emptyDistance };
+    return { emptyDistance, sunSize };
   }
 
   const normalize = (min, max, x) => {
