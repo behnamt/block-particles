@@ -4,7 +4,8 @@ import { useWeb3React } from '@web3-react/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
-import System from '../components/System';
+// import System from '../components/System';
+import System from '../components/System2D';
 import useExtractPlant from '../hooks/useExtractPlant';
 import BN from 'bn.js';
 
@@ -125,7 +126,7 @@ function SystemPage() {
       if (web3 && account) {
         const { transactions, gasUsed, hash } = await web3.eth.getBlock(blockNumber);
         setSunProperties({ gasUsed, hash });
-        setTransactions(transactions);
+        setTransactions(transactions.slice(0,20));
       }
     })();
 

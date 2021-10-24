@@ -31,7 +31,11 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
     const tailLength = 90 * (radius / sunSize);
 
     return {
-      color: `#${_color1}${_color2}${_color3}`,
+      color: {
+        r: parseInt(`0x${_color1}`, HEX),
+        g: parseInt(`0x${_color2}`, HEX),
+        b: parseInt(`0x${_color3}`, HEX),
+      },
       theta,
       distance,
       speed,
