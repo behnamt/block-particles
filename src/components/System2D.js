@@ -1,10 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { ReactP5Wrapper } from 'react-p5-wrapper';
 import PlanetBody from '../p5/Planet2D';
+import Background from '../p5/Background';
+import Habitable from '../p5/Habitable';
 
 function System({ sun, planets, canvasSize }) {
   const sketh = (p) => {
     let sunPlanet;
+    let background = new Background(p);
+    let habitable = new Habitable({p, innerRadius: sun.habitableStart, outerRadius: sun.habitableEnd});
 
     p.setup = () => {
       p.createVector(0, 0);
@@ -54,9 +58,10 @@ function System({ sun, planets, canvasSize }) {
     }
 
     p.draw = () => {
+      background.draw();
       p.translate(p.width / 2, p.height / 2);
+      habitable.draw();
 
-      p.background(0);
 
       p.noStroke();
 

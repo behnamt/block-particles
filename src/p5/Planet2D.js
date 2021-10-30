@@ -1,6 +1,8 @@
-class PlanetBody {
+import Base from "./Base";
+
+class PlanetBody extends Base{
   constructor({ p, radius, distance, parent, emission, color, theta = 1, speed = 1, planet = false, tailLength = 10 }) {
-    this.p = p;
+    super(p);
     this.color = color;
     this.radius = radius;
     this.speed = speed;

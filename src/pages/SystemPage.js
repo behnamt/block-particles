@@ -45,8 +45,8 @@ function SystemPage() {
   const [transactions, setTransactions] = useState([]);
 
   const setSunProperties = ({ gasUsed, hash }) => {
-    const {emptyDistance, sunSize} = getSun({ tx: hash, gasUsed })
-    setSun({ size: sunSize, tx: hash, emptyDistance });
+    const {habitableStart, habitableEnd, sunSize} = getSun({ tx: hash, gasUsed })
+    setSun({ size: sunSize, tx: hash, habitableStart, habitableEnd });
     return sunSize;
   }
 
