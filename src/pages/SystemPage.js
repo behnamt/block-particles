@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { useWeb3React } from '@web3-react/core';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
 import System from '../components/System';
@@ -15,7 +15,18 @@ const WrapperDiv = styled.div`
     cursor: pointer;
     background: #969696;
     margin: 0 auto;
-`
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+const StyledInput = styled.input`
+  margin-top: 20px;
+  font-size: 30px;
+  height: 70px;
+  width: 200px;
+`;
 
 const CANVAS_SIZE = 700; // in px
 const HASH_SPLITTER = 2;
@@ -35,7 +46,7 @@ function SystemPage() {
   const setSunProperties = ({ gasUsed, hash }) => {
     const bnGasUsed = new BN(gasUsed);
     const sunSize = Math.round(Math.log(bnGasUsed.toNumber()));
-    const {emptyDistance} = getSun({ tx: hash, sunSize})
+    const { emptyDistance } = getSun({ tx: hash, sunSize })
     setSun({ size: sunSize, tx: hash, emptyDistance });
     return sunSize;
   }
@@ -46,10 +57,10 @@ function SystemPage() {
     for await (const tx of transactions) {
       const hashData = await web3.eth.getTransaction(tx);
       hashData.value === '0' ?
-       zeroPlanets.push(hashData.hash) : 
-       fatPlanets.push({ tx: hashData.hash, value: hashData.value });
+        zeroPlanets.push(hashData.hash) :
+        fatPlanets.push({ tx: hashData.hash, value: hashData.value });
     }
-    setRawPlanets({zeroPlanets, fatPlanets: extractDataAndSort(fatPlanets) });
+    setRawPlanets({ zeroPlanets, fatPlanets: extractDataAndSort(fatPlanets) });
   }
 
   const extractDataAndSort = (fatPlanets) => {
@@ -99,6 +110,16 @@ function SystemPage() {
     setPlanetsWithMoons(moonalizedPlanets);
   }
 
+  const handleKeyPress = ({ code, target }) => {
+    if (code === 'Enter') {
+      if (!isNaN(parseInt(target.value))) {
+        setBlockNumber(target.value);
+      } else {
+        setBlockNumber('latest');
+      }
+    }
+  }
+
   useEffect(() => {
     (async () => {
       if (web3 && account) {
@@ -111,23 +132,29 @@ function SystemPage() {
   }, [web3, account, blockNumber]);
 
   useEffect(() => {
-    if (sun?.size && transactions.length){
-      getRawPlanets({transactions});
+    if (sun?.size && transactions.length) {
+      getRawPlanets({ transactions });
     }
   }, [sun, transactions])
 
   useEffect(() => {
-    if (rawPlanets.zeroPlanets.length || rawPlanets.fatPlanets.length){
+    if (rawPlanets.zeroPlanets.length || rawPlanets.fatPlanets.length) {
       moonalize();
     }
   }, [rawPlanets])
 
   return (
-    <WrapperDiv canvasSize={CANVAS_SIZE}>
-      {sun.size > 0 && planetsWithMoon.length && (
-        <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
-      )}
-    </WrapperDiv>
+    <React.Fragment>
+      <WrapperDiv canvasSize={CANVAS_SIZE}>
+        {sun.size > 0 && planetsWithMoon.length && (
+          <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
+        )}
+      </WrapperDiv>
+      <InputWrapper>
+        <StyledInput onKeyPress={handleKeyPress} defaultValue={blockNumber} placeholder="block number" title="press enter to apply" />
+      </InputWrapper>
+    </React.Fragment>
+
   )
 }
 

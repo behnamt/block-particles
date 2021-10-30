@@ -17,10 +17,10 @@ function App() {
             <Route path="/particles/:block">
               <ParticlesPage />
             </Route>
-            <Route path="/system">
+            <Route path="/system/:block">
               <SystemPage />
             </Route>
-            <Route path="/system/:block">
+            <Route path="/system">
               <SystemPage />
             </Route>
             <Route path="/">
