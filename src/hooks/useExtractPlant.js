@@ -5,7 +5,6 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
   const HEX = 16;
   const MAX_INT = HASH_SPLITTER ** 8;
   const re = new RegExp(`.{1,${HASH_SPLITTER}}`, 'g');
-  const EMPTY_SPACE = 100;
 
   const getSun = ({ tx, gasUsed }) => {
     const bnGasUsed = new BN(gasUsed);
@@ -13,13 +12,13 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
 
     const noZeroHash = tx.substring(2);
     const [_habitableStart, _habitableEnd] = noZeroHash.match(re);
-    const habitableEnd = normalize(sunSize, (CANVAS_SIZE / 2) , parseInt(`0x${_habitableStart}`, HEX));
-    const habitableStart = normalize(sunSize, (CANVAS_SIZE / 2) - habitableEnd, parseInt(`0x${_habitableStart}`, HEX));
+    const habitableStart = normalize(sunSize, (CANVAS_SIZE / 2) , parseInt(`0x${_habitableStart}`, HEX));
+    const habitableEnd = normalize(habitableStart, (CANVAS_SIZE / 2), parseInt(`0x${_habitableEnd}`, HEX));
     return { habitableStart, habitableEnd, sunSize };
   }
 
   const normalize = (min, max, x) => {
-    return (max - min) * (x / MAX_INT)
+    return Math.abs((max - min) * (x / MAX_INT));
   }
 
   const getPlanet = ({ tx }, sunSize) => {

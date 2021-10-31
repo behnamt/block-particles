@@ -30,7 +30,7 @@ const StyledInput = styled.input`
 
 const CANVAS_SIZE = 700; // in px
 const HASH_SPLITTER = 2;
-const DISTANCE_MULT = 2;
+const DISTANCE_MULT = 4;
 
 function SystemPage() {
 
@@ -40,6 +40,7 @@ function SystemPage() {
   const [blockNumber, setBlockNumber] = useState(block || 'latest');
 
   const [rawPlanets, setRawPlanets] = useState({ zeroPlanets: [], fatPlanets: [] })
+  const [moonalizedPlanets, setMoonalizedPlanets] = useState([]);
   const [planetsWithMoon, setPlanetsWithMoons] = useState([]);
   const [sun, setSun] = useState({ size: 0, tx: '', emptyDistance: 0 });
   const [transactions, setTransactions] = useState([]);
@@ -78,35 +79,53 @@ function SystemPage() {
   }
 
   const moonalize = () => {
-    let moonalizedPlanets = [rawPlanets.fatPlanets[0]];
+    let initialMoonalized = [rawPlanets.fatPlanets[0]];
 
     rawPlanets.fatPlanets.forEach((planet, i) => {
       if (i > 0) {
-        const lastPlanetWithMoon = moonalizedPlanets[moonalizedPlanets.length - 1];
+        const lastPlanetWithMoon = initialMoonalized[initialMoonalized.length - 1];
         if (areTwoPlanetsNear(planet, DISTANCE_MULT, lastPlanetWithMoon)) {
-          const newDistance = normalize(planet.radius, (lastPlanetWithMoon.radius * DISTANCE_MULT), planet.distance);
 
           if (!lastPlanetWithMoon.children) {
-            moonalizedPlanets[moonalizedPlanets.length - 1].children = [];
+            initialMoonalized[initialMoonalized.length - 1].children = [];
           }
-          moonalizedPlanets[moonalizedPlanets.length - 1].children.push({ ...planet, distance: newDistance })
+          initialMoonalized[initialMoonalized.length - 1].children.push(planet)
           
         } else {
-          moonalizedPlanets.push(planet)
+          initialMoonalized.push(planet)
         }
       }
     });
 
-    //TODO: make the biggest moon, the main planet
+    setMoonalizedPlanets(initialMoonalized);
+
+
+    
+  }
+
+  const moonify = () => {
 
     moonalizedPlanets.forEach(planet => {
       if (planet?.children?.length) {
+        planet.children = planet.children.sort((a,b)=> a.radius - b.radius);
+
+        const biggestMoon = planet.children[planet.children.length-1];
+
+        // exchange radius with the biggest moon
+        if (biggestMoon.radius > planet.radius) {
+          planet.radius += biggestMoon.radius;
+          planet.children[planet.children.length-1].radius = planet.radius - planet.children[planet.children.length-1].radius;
+          planet.radius -= planet.children[planet.children.length-1].radius;
+        }
         let newPlanetRadius = planet.radius;
         
-        planet.children = planet.children.map(moon => {
+        planet.children = planet.children.map((moon, i) => {
           newPlanetRadius += moon.radius * 0.1;
+          const distance = (planet.radius * DISTANCE_MULT * (i+1)) / planet.children.length;
+
           return {
             ...moon,
+            distance,
             radius: moon.radius * 0.9,
           }
         })
@@ -148,6 +167,12 @@ function SystemPage() {
       moonalize();
     }
   }, [rawPlanets])
+
+  useEffect(() => {
+    if (moonalizedPlanets.length) {
+      moonify();
+    }
+  }, [moonalizedPlanets])
 
   return (
     <React.Fragment>
