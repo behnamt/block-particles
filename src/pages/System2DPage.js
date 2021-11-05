@@ -4,7 +4,7 @@ import { useWeb3React } from '@web3-react/core';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
-import System from '../components/System';
+import System from '../components/System2D';
 import { useSystem } from '../hooks/useSystem';
 
 const WrapperDiv = styled.div`
@@ -77,33 +77,33 @@ function SystemPage() {
         setRawPlanets(raw);
       }
     })();
-}, [sun, transactions])
+  }, [sun, transactions])
 
-useEffect(() => {
-  if (rawPlanets?.zeroPlanets?.length || rawPlanets?.fatPlanets?.length) {
-    setMoonalizedPlanets(moonalize(rawPlanets));
-  }
-}, [rawPlanets])
+  useEffect(() => {
+    if (rawPlanets?.zeroPlanets?.length || rawPlanets?.fatPlanets?.length) {
+      setMoonalizedPlanets(moonalize(rawPlanets));
+    }
+  }, [rawPlanets])
 
-useEffect(() => {
-  if (moonalizedPlanets.length) {
-    setPlanetsWithMoons(moonify(moonalizedPlanets, sun.size));
-  }
-}, [moonalizedPlanets])
+  useEffect(() => {
+    if (moonalizedPlanets.length) {
+      setPlanetsWithMoons(moonify(moonalizedPlanets, sun.size));
+    }
+  }, [moonalizedPlanets])
 
-return (
-  <React.Fragment>
-    <WrapperDiv canvasSize={CANVAS_SIZE}>
-      {sun.size > 0 && planetsWithMoon.length && (
-        <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
-      )}
-    </WrapperDiv>
-    <InputWrapper>
-      <StyledInput onKeyPress={handleKeyPress} defaultValue={blockNumber} placeholder="block number" title="press enter to apply" />
-    </InputWrapper>
-  </React.Fragment>
+  return (
+    <React.Fragment>
+      <WrapperDiv canvasSize={CANVAS_SIZE}>
+        {sun.size > 0 && planetsWithMoon.length && (
+          <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
+        )}
+      </WrapperDiv>
+      <InputWrapper>
+        <StyledInput onKeyPress={handleKeyPress} defaultValue={blockNumber} placeholder="block number" title="press enter to apply" />
+      </InputWrapper>
+    </React.Fragment>
 
-)
+  )
 }
 
 export default SystemPage;

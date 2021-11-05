@@ -2,7 +2,7 @@ class PlanetBody {
   constructor({ p, drag, radius, distance, parent, emission, color, theta = 1, speed = 1, planet = false, tailLength = 10 }) {
     this.p = p;
     this.drag = drag;
-    this.color = p.color(color) ;
+    this.color = color ;
     this.radius = radius;
     this.speed = speed;
     this.distance = distance;
@@ -41,7 +41,7 @@ class PlanetBody {
       this.p.rotate(-this.tail[i].angle);
       this.p.translate(this.distance, 0);
       this.p.strokeWeight(1);
-      this.p.stroke(this.color);
+      this.p.stroke(this.p.color(`rgba(${this.color.r},${this.color.g},${this.color.b},${i*(1/this.tailLength)})`));
       this.p.line(0, 0, 0, 5);
       this.p.noFill();
       
@@ -63,7 +63,7 @@ class PlanetBody {
     if (this.emission) {
       this.p.ambientLight(this.emission);
     }
-    this.p.ambientMaterial(this.color);
+    this.p.ambientMaterial(this.p.color(`rgb(${this.color.r},${this.color.g},${this.color.b})`));
     this.p.sphere(this.radius);
     for (let body of this.children) {
       body.draw();
