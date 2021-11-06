@@ -2,20 +2,24 @@ import { useWeb3React } from "@web3-react/core";
 import useExtractPlant from "./useExtractPlant";
 
 export const useSystem = (CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT) => {
-  const { getPlanet, getSun } = useExtractPlant({ CANVAS_SIZE, HASH_SPLITTER })
+  const { getPlanet, getSun, getAstroid } = useExtractPlant({ CANVAS_SIZE, HASH_SPLITTER })
   const { library: web3 } = useWeb3React();
 
 
-  const extractDataAndSort = (sunSize,fatPlanets) => {
+  const extractPlanetDataAndSort = (sunSize,fatPlanets) => {
     return fatPlanets.map((planet) => getPlanet(planet, sunSize)).sort((a, b) => a.distance - b.distance);
   }
 
-  const getSunProperties = ({ gasUsed, hash }) => {
-    const {habitableStart, habitableEnd, sunSize} = getSun({ tx: hash, gasUsed })
-     return { size: sunSize, tx: hash, habitableStart, habitableEnd };
+  const extractAstroidData = (zeroPlanets, sun) => {
+    return zeroPlanets.map((astroid) => getAstroid(astroid, sun));
   }
 
-  const getRawPlanets = async ({ sunSize, transactions }) => {
+  const getSunProperties = ({ gasUsed, hash }) => {
+    const {sunSize, ...rest} = getSun({ tx: hash, gasUsed })
+     return { size: sunSize, tx: hash, ...rest };
+  }
+
+  const getRawPlanets = async ({ sun, transactions }) => {
     const zeroPlanets = [];
     const fatPlanets = [];
     for await (const tx of transactions) {
@@ -24,7 +28,7 @@ export const useSystem = (CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT) => {
         zeroPlanets.push(hashData.hash) :
         fatPlanets.push({ tx: hashData.hash, value: hashData.value });
     }
-    return { zeroPlanets, fatPlanets: extractDataAndSort(sunSize, fatPlanets) };
+    return { zeroPlanets: extractAstroidData(zeroPlanets, sun), fatPlanets: extractPlanetDataAndSort(sun.size, fatPlanets) };
   }
 
   const areTwoPlanetsNear = (planetA, multA = 1, planetB, multB = 1) => {
@@ -38,10 +42,10 @@ export const useSystem = (CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT) => {
   
   }
 
-  const moonalize = (rawPlanets) => {
-    let initialMoonalized = [rawPlanets.fatPlanets[0]];
+  const moonalize = (plantesWithAstroids) => {
+    let initialMoonalized = [plantesWithAstroids[0]];
 
-    rawPlanets.fatPlanets.forEach((planet, i) => {
+    plantesWithAstroids.forEach((planet, i) => {
       if (i > 0) {
         const lastPlanetWithMoon = initialMoonalized[initialMoonalized.length - 1];
         if (areTwoPlanetsNear(planet, DISTANCE_MULT, lastPlanetWithMoon)) {
@@ -92,10 +96,26 @@ export const useSystem = (CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT) => {
     return moonalizedPlanets;
   }
 
+  const astroidiez = ({rawPlanets, astroidsLocation}) => {
+    const astroidsWidth = astroidsLocation.end - astroidsLocation.start;
+    const planets = rawPlanets.fatPlanets.map(planet => {
+      if (planet.distance > astroidsLocation.start) {
+        return {
+          ...planet,
+          distance: Math.min(planet.distance + astroidsWidth, CANVAS_SIZE/2)
+        }
+      }
+      return planet;
+    })
+    return [planets, rawPlanets.zeroPlanets];
+  }
+
+
   return {
     getSunProperties,
     getRawPlanets,
     moonalize,
     moonify,
+    astroidiez,
   }
 }

@@ -40,13 +40,16 @@ function SystemPage() {
     getRawPlanets,
     moonalize,
     moonify,
+    astroidiez,
   } = useSystem(CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT);
 
   const [blockNumber, setBlockNumber] = useState(block || 'latest');
   const [rawPlanets, setRawPlanets] = useState({ zeroPlanets: [], fatPlanets: [] })
+  const [plantesWithAstroids, setPlantesWithAstroids] = useState([]);
+  const [astroids, setAstroids] = useState([]);
   const [moonalizedPlanets, setMoonalizedPlanets] = useState([]);
   const [planetsWithMoon, setPlanetsWithMoons] = useState([]);
-  const [sun, setSun] = useState({ size: 0, tx: '', emptyDistance: 0 });
+  const [sun, setSun] = useState({ size: 0, astroidsStart: 0, astroidsEnd: 0 });
   const [transactions, setTransactions] = useState([]);
 
   const handleKeyPress = ({ code, target }) => {
@@ -73,7 +76,10 @@ function SystemPage() {
   useEffect(() => {
     (async () => {
       if (sun?.size && transactions.length) {
-        const raw = await getRawPlanets({ sunSize: sun.size, transactions });
+        const raw = await getRawPlanets({ 
+          sun,
+          transactions,
+        });
         setRawPlanets(raw);
       }
     })();
@@ -81,9 +87,17 @@ function SystemPage() {
 
   useEffect(() => {
     if (rawPlanets?.zeroPlanets?.length || rawPlanets?.fatPlanets?.length) {
-      setMoonalizedPlanets(moonalize(rawPlanets));
+      const [planets, astroids] = astroidiez({rawPlanets, astroidsLocation: {start: sun.astroidsStart, end: sun.astroidsEnd}});
+      setPlantesWithAstroids(planets);
+      setAstroids(astroids);
     }
   }, [rawPlanets])
+
+  useEffect(() => {
+    if (plantesWithAstroids?.length) {
+      setMoonalizedPlanets(moonalize(plantesWithAstroids));
+    }
+  }, [plantesWithAstroids])
 
   useEffect(() => {
     if (moonalizedPlanets.length) {
@@ -95,7 +109,7 @@ function SystemPage() {
     <React.Fragment>
       <WrapperDiv canvasSize={CANVAS_SIZE}>
         {sun.size > 0 && planetsWithMoon.length && (
-          <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
+          <System sun={sun} planets={planetsWithMoon} astroids={astroids} canvasSize={CANVAS_SIZE} />
         )}
       </WrapperDiv>
       <InputWrapper>

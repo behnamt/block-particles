@@ -11,10 +11,12 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
     const sunSize = Math.round(Math.log(bnGasUsed.toNumber()));
 
     const noZeroHash = tx.substring(2);
-    const [_habitableStart, _habitableEnd] = noZeroHash.match(re);
+    const [_habitableStart, _habitableEnd, _astroidsStart, _astroidsEnd] = noZeroHash.match(re);
     const habitableStart = normalize(sunSize, (CANVAS_SIZE / 2) , parseInt(`0x${_habitableStart}`, HEX));
     const habitableEnd = normalize(habitableStart, (CANVAS_SIZE / 2), parseInt(`0x${_habitableEnd}`, HEX));
-    return { habitableStart, habitableEnd, sunSize };
+    const astroidsStart = normalize(sunSize, (CANVAS_SIZE / 2) , parseInt(`0x${_astroidsStart}`, HEX));
+    const astroidsEnd = normalize(astroidsStart, (CANVAS_SIZE / 2), parseInt(`0x${_astroidsEnd}`, HEX));
+    return { habitableStart, habitableEnd, astroidsStart, astroidsEnd, sunSize };
   }
 
   const normalize = (min, max, x) => {
@@ -46,8 +48,35 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
     };
   }
 
+  const getAstroid = (tx, sun) => {
+    const noZeroHash = tx.substring(2);
+
+    const [_distance, _theta, _size, _color1, _color2, _color3] = noZeroHash.match(re);
+
+    const theta = normalize(0, 1, parseInt(`0x${_theta}`, HEX));
+    const distance = normalize(sun.size, sun.astroidsEnd, parseInt(`0x${_distance}`, HEX)) + sun.astroidsStart;
+    const size = normalize(4, 10, parseInt(`0x${_size}`, HEX));
+
+    return {
+      // color: {
+      //   r: parseInt(`0x${_color1}`, HEX),
+      //   g: parseInt(`0x${_color2}`, HEX),
+      //   b: parseInt(`0x${_color3}`, HEX),
+      // },
+      color: {
+        r: 195,
+        g: 160,
+        b: 107,
+      },
+      theta,
+      distance,
+      size,
+    };
+  }
+
   return {
     getPlanet,
+    getAstroid,
     normalize,
     getSun,
   }
