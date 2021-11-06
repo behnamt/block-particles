@@ -51,7 +51,7 @@ const useExtractPlant = ({ CANVAS_SIZE, HASH_SPLITTER, }) => {
   const getAstroid = (tx, sun) => {
     const noZeroHash = tx.substring(2);
 
-    const [_distance, _theta, _size, _color1, _color2, _color3] = noZeroHash.match(re);
+    const [_distance, _theta, _size] = noZeroHash.match(re);
 
     const theta = normalize(0, 1, parseInt(`0x${_theta}`, HEX));
     const distance = normalize(sun.size, sun.astroidsEnd, parseInt(`0x${_distance}`, HEX)) + sun.astroidsStart;
