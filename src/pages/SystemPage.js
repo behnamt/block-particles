@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
 import System from '../components/System';
+import System2D from '../components/System2D';
 import { CANVAS_SIZE } from '../constants/numbers';
 import { useSystem } from '../hooks/useSystem';
 
@@ -28,7 +29,8 @@ const StyledInput = styled.input`
   width: 200px;
 `;
 
-function SystemPage() {
+
+function SystemPage({ is2D }) {
 
   let { block } = useParams();
   const { account, library: web3 } = useWeb3React();
@@ -37,13 +39,16 @@ function SystemPage() {
     getRawPlanets,
     moonalize,
     moonify,
+    astroidiez,
   } = useSystem();
 
   const [blockNumber, setBlockNumber] = useState(block || 'latest');
   const [rawPlanets, setRawPlanets] = useState({ zeroPlanets: [], fatPlanets: [] })
+  const [plantesWithAstroids, setPlantesWithAstroids] = useState([]);
+  const [astroids, setAstroids] = useState([]);
   const [moonalizedPlanets, setMoonalizedPlanets] = useState([]);
   const [planetsWithMoon, setPlanetsWithMoons] = useState([]);
-  const [sun, setSun] = useState({ size: 0, tx: '', emptyDistance: 0 });
+  const [sun, setSun] = useState({ size: 0, astroidsStart: 0, astroidsEnd: 0 });
   const [transactions, setTransactions] = useState([]);
 
   const handleKeyPress = ({ code, target }) => {
@@ -70,37 +75,52 @@ function SystemPage() {
   useEffect(() => {
     (async () => {
       if (sun?.size && transactions.length) {
-        const raw = await getRawPlanets({ sunSize: sun.size, transactions });
+        const raw = await getRawPlanets({ 
+          sun,
+          transactions,
+        });
         setRawPlanets(raw);
       }
     })();
-}, [sun, transactions])
+  }, [sun, transactions])
 
-useEffect(() => {
-  if (rawPlanets?.zeroPlanets?.length || rawPlanets?.fatPlanets?.length) {
-    setMoonalizedPlanets(moonalize(rawPlanets));
-  }
-}, [rawPlanets])
+  useEffect(() => {
+    if (rawPlanets?.zeroPlanets?.length || rawPlanets?.fatPlanets?.length) {
+      const [planets, astroids] = astroidiez({rawPlanets, astroidsLocation: {start: sun.astroidsStart, end: sun.astroidsEnd}});
+      setPlantesWithAstroids(planets);
+      setAstroids(astroids);
+    }
+  }, [rawPlanets])
 
-useEffect(() => {
-  if (moonalizedPlanets.length) {
-    setPlanetsWithMoons(moonify(moonalizedPlanets, sun.size));
-  }
-}, [moonalizedPlanets])
+  useEffect(() => {
+    if (plantesWithAstroids?.length) {
+      setMoonalizedPlanets(moonalize(plantesWithAstroids));
+    }
+  }, [plantesWithAstroids])
 
-return (
-  <React.Fragment>
-    <WrapperDiv canvasSize={CANVAS_SIZE}>
-      {sun.size > 0 && planetsWithMoon.length && (
-        <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
-      )}
-    </WrapperDiv>
-    <InputWrapper>
-      <StyledInput onKeyPress={handleKeyPress} defaultValue={blockNumber} placeholder="block number" title="press enter to apply" />
-    </InputWrapper>
-  </React.Fragment>
+  useEffect(() => {
+    if (moonalizedPlanets.length) {
+      setPlanetsWithMoons(moonify(moonalizedPlanets, sun.size));
+    }
+  }, [moonalizedPlanets])
 
-)
+  return (
+    <React.Fragment>
+      <WrapperDiv canvasSize={CANVAS_SIZE}>
+        {sun.size > 0 && planetsWithMoon.length && (
+          is2D ? (
+            <System2D sun={sun} planets={planetsWithMoon} astroids={astroids} canvasSize={CANVAS_SIZE} />
+          ) : (
+            <System sun={sun} planets={planetsWithMoon} astroids={astroids} canvasSize={CANVAS_SIZE} />
+          )
+        )}
+      </WrapperDiv>
+      <InputWrapper>
+        <StyledInput onKeyPress={handleKeyPress} defaultValue={blockNumber} placeholder="block number" title="press enter to apply" />
+      </InputWrapper>
+    </React.Fragment>
+
+  )
 }
 
 export default SystemPage;

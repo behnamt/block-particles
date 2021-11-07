@@ -4,7 +4,6 @@ import { Switch, Route } from "react-router-dom";
 import WalletConnect from './WalletConnect';
 import ParticlesPage from '../pages/ParticlesPage';
 import SystemPage from '../pages/SystemPage';
-import System2DPage from '../pages/System2DPage';
 
 function App() {
 
@@ -25,10 +24,10 @@ function App() {
               <SystemPage />
             </Route>
             <Route path="/system-2d/:block">
-              <System2DPage />
+              <SystemPage is2D={true}/>
             </Route>
             <Route path="/system-2d">
-              <System2DPage />
+              <SystemPage is2D={true}/>
             </Route>
             <Route path="/">
               <ParticlesPage />
