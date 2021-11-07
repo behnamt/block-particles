@@ -1,13 +1,10 @@
 import { useEffect } from 'react';
 import anime from 'animejs/lib/anime.es.js';
 import styled from 'styled-components';
+import useNumber from '../hooks/useNumber';
+import { CANVAS_SIZE, HASH_SPLITTER, MAX_PARTICLE_SIZE } from '../constants/numbers';
 
-const CANVAS_SIZE = 500; // in px
-const MAX_PARTICLE_SIZE = 50; // in px
 
-const HASH_SPLITTER = 2;
-const MAX_INT = HASH_SPLITTER ** 8;
-const HEX = 16;
 
 const re = new RegExp(`.{1,${HASH_SPLITTER}}`, 'g');
 
@@ -25,6 +22,7 @@ const StyledDiv = styled.div`
 `;
 
 function Particles({ hashes }) {
+  const {hexToInt, MAX_INT} = useNumber();
 
   useEffect(() => {
     if (hashes.length) {
@@ -32,17 +30,17 @@ function Particles({ hashes }) {
         const noZeroHash = tx.substring(2);
         const [_color1, _color2, _color3, _fromX, _toX, _fromY, _toY, _fromSize, _toSize, _rotate, _fromBorder, _toBorder, _duration, _delay] = noZeroHash.match(re);
 
-        const fromX = parseInt(`0x${_fromX}`, HEX) / MAX_INT * CANVAS_SIZE;
-        const toX = parseInt(`0x${_toX}`, HEX) / MAX_INT * CANVAS_SIZE;
-        const fromY = parseInt(`0x${_fromY}`, HEX) / MAX_INT * CANVAS_SIZE;
-        const toY = parseInt(`0x${_toY}`, HEX) / MAX_INT * CANVAS_SIZE;
-        const fromSize = parseInt(`0x${_fromSize}`, HEX) / MAX_INT * MAX_PARTICLE_SIZE;
-        const toSize = parseInt(`0x${_toSize}`, HEX) / MAX_INT * MAX_PARTICLE_SIZE;
-        const rotate = parseInt(`0x${_rotate}`, HEX) / MAX_INT * 360;
-        const fromBorder = parseInt(`0x${_fromBorder}`, HEX) / MAX_INT * 100;
-        const toBorder = parseInt(`0x${_toBorder}`, HEX) / MAX_INT * 100;
-        const duration = parseInt(`0x${_duration}`, HEX) * 100;
-        const delay = parseInt(`0x${_delay}`, HEX) * 10;
+        const fromX = hexToInt(_fromX) / MAX_INT * CANVAS_SIZE;
+        const toX = hexToInt(_toX) / MAX_INT * CANVAS_SIZE;
+        const fromY = hexToInt(_fromY) / MAX_INT * CANVAS_SIZE;
+        const toY = hexToInt(_toY) / MAX_INT * CANVAS_SIZE;
+        const fromSize = hexToInt(_fromSize) / MAX_INT * MAX_PARTICLE_SIZE;
+        const toSize = hexToInt(_toSize) / MAX_INT * MAX_PARTICLE_SIZE;
+        const rotate = hexToInt(_rotate) / MAX_INT * 360;
+        const fromBorder = hexToInt(_fromBorder) / MAX_INT * 100;
+        const toBorder = hexToInt(_toBorder) / MAX_INT * 100;
+        const duration = hexToInt(_duration) * 100;
+        const delay = hexToInt(_delay) * 10;
         return {
           backgroundColor: `#${_color1}${_color2}${_color3}`,
           translateX: [fromX, toX],
@@ -71,6 +69,7 @@ function Particles({ hashes }) {
         delay: (el, i) => animatedHashes[i].delay
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hashes]);
 
 

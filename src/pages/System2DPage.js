@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
 import System from '../components/System2D';
+import { CANVAS_SIZE } from '../constants/numbers';
 import { useSystem } from '../hooks/useSystem';
 
 const WrapperDiv = styled.div`
@@ -27,9 +28,6 @@ const StyledInput = styled.input`
   width: 200px;
 `;
 
-const CANVAS_SIZE = 700; // in px
-const HASH_SPLITTER = 2;
-const DISTANCE_MULT = 4;
 
 function SystemPage() {
 
@@ -41,7 +39,7 @@ function SystemPage() {
     moonalize,
     moonify,
     astroidiez,
-  } = useSystem(CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT);
+  } = useSystem();
 
   const [blockNumber, setBlockNumber] = useState(block || 'latest');
   const [rawPlanets, setRawPlanets] = useState({ zeroPlanets: [], fatPlanets: [] })

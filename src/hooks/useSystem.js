@@ -1,8 +1,9 @@
 import { useWeb3React } from "@web3-react/core";
+import { CANVAS_SIZE, DISTANCE_MULT } from "../constants/numbers";
 import useExtractPlant from "./useExtractPlant";
 
-export const useSystem = (CANVAS_SIZE, HASH_SPLITTER, DISTANCE_MULT) => {
-  const { getPlanet, getSun, getAstroid } = useExtractPlant({ CANVAS_SIZE, HASH_SPLITTER })
+export const useSystem = () => {
+  const { getPlanet, getSun, getAstroid } = useExtractPlant()
   const { library: web3 } = useWeb3React();
 
 
