@@ -100,10 +100,10 @@ export const useSystem = () => {
   const astroidiez = ({rawPlanets, astroidsLocation}) => {
     const astroidsWidth = astroidsLocation.end - astroidsLocation.start;
     const planets = rawPlanets.fatPlanets.map(planet => {
-      if (planet.distance > astroidsLocation.start) {
+      if (planet.distance > (astroidsLocation.start - (planet.radius * DISTANCE_MULT))) {
         return {
           ...planet,
-          distance: Math.min(planet.distance + astroidsWidth, CANVAS_SIZE/2)
+          distance: Math.min(planet.distance + astroidsWidth + (planet.radius * DISTANCE_MULT), CANVAS_SIZE/2)
         }
       }
       return planet;

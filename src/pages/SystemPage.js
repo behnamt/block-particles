@@ -111,7 +111,7 @@ function SystemPage({ is2D }) {
           is2D ? (
             <System2D sun={sun} planets={planetsWithMoon} astroids={astroids} canvasSize={CANVAS_SIZE} />
           ) : (
-            <System sun={sun} planets={planetsWithMoon} astroids={astroids} canvasSize={CANVAS_SIZE} />
+            <System sun={sun} planets={planetsWithMoon} canvasSize={CANVAS_SIZE} />
           )
         )}
       </WrapperDiv>

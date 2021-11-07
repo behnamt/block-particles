@@ -6,7 +6,7 @@ const useNumber = () => {
     const MAX_INT = HASH_SPLITTER ** 8
 
   const normalize = (min, max, x, maxInt = MAX_INT) => {
-    return Math.abs((max - min) * (x / maxInt));
+    return Math.abs((max - min) * (x / maxInt)) + min;
   }
 
     return {

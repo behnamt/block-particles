@@ -19,10 +19,7 @@ function System({ sun, planets, canvasSize, astroids }) {
 
       astroidPlanets = astroids.map(astroid => (new AstroidBody({
         p,
-        size: astroid.size,
-        distance: astroid.distance,
-        theta: astroid.theta,
-        color: astroid.color,
+        ...astroid
       })))
 
       sunPlanet = new PlanetBody({
